@@ -1,0 +1,14 @@
+{
+  "feature_id": 7,
+  "feature_name": "푸터",
+  "scores": {
+    "completeness": 9,
+    "code_quality": 9,
+    "ui_ux": 8,
+    "compatibility": 10
+  },
+  "average": 9.0,
+  "passed": true,
+  "issues": [],
+  "improvements": []
+}
