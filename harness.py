@@ -374,13 +374,12 @@ async def run_agent_session(
         # 대신 security.py의 훅이 보안 검사를 수행한다.
         permission_mode="acceptEdits",
 
-        # CLAUDE.md를 자동으로 로드하여 에이전트에게 프로젝트 규칙을 전달한다.
-        # "project" 소스는 현재 디렉토리의 CLAUDE.md를 찾는다.
-        setting_sources=["project"],
+        # 작업 디렉토리를 프로젝트 루트로 설정한다.
+        # 이렇게 하면 CLAUDE.md가 자동으로 로드되어 에이전트에게 프로젝트 규칙이 전달된다.
+        cwd=str(PROJECT_ROOT),
 
         # 에이전트의 리소스 제한
         max_turns=max_turns,
-
 
         # 보안 훅 연결
         # security.py의 create_security_hooks()가 반환하는 훅 딕셔너리를
