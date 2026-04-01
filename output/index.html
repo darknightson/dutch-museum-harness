@@ -205,8 +205,100 @@
     </div>
   </section>
 
-  <section id="visit">
-    <!-- TODO: 코딩 에이전트가 구현 -->
+  <section id="visit" class="visit" aria-label="방문 정보">
+    <div class="visit__inner">
+      <h2 class="visit__heading">방문 정보</h2>
+      <p class="visit__description">네덜란드 대표 미술관의 위치, 운영시간, 입장료를 확인하세요.</p>
+      <div class="visit__grid">
+        <article class="visit-card" aria-label="암스테르담 국립미술관 방문 정보">
+          <div class="visit-card__header">
+            <span class="visit-card__icon" aria-hidden="true">🏛</span>
+            <h3 class="visit-card__name">암스테르담 국립미술관</h3>
+            <p class="visit-card__name-en">Rijksmuseum</p>
+          </div>
+          <div class="visit-card__body">
+            <table class="visit-card__table" aria-label="암스테르담 국립미술관 상세 정보">
+              <tbody>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">📍 주소</th>
+                  <td class="visit-card__value">Museumstraat 1, 1071 XX Amsterdam</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">🕐 운영시간</th>
+                  <td class="visit-card__value">매일 09:00 – 17:00</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">💶 입장료</th>
+                  <td class="visit-card__value">성인 €22.50 / 18세 이하 무료</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">🚇 교통</th>
+                  <td class="visit-card__value">트램 2, 5번 Rijksmuseum 정류장</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+        <article class="visit-card" aria-label="반 고흐 미술관 방문 정보">
+          <div class="visit-card__header visit-card__header--gogh">
+            <span class="visit-card__icon" aria-hidden="true">🌻</span>
+            <h3 class="visit-card__name">반 고흐 미술관</h3>
+            <p class="visit-card__name-en">Van Gogh Museum</p>
+          </div>
+          <div class="visit-card__body">
+            <table class="visit-card__table" aria-label="반 고흐 미술관 상세 정보">
+              <tbody>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">📍 주소</th>
+                  <td class="visit-card__value">Museumplein 6, 1071 DJ Amsterdam</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">🕐 운영시간</th>
+                  <td class="visit-card__value">매일 09:00 – 18:00 (금 ~21:00)</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">💶 입장료</th>
+                  <td class="visit-card__value">성인 €20 / 18세 이하 무료</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">🚇 교통</th>
+                  <td class="visit-card__value">트램 2, 5번 Van Baerlestraat 정류장</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+        <article class="visit-card" aria-label="마우리츠하위스 방문 정보">
+          <div class="visit-card__header visit-card__header--mauritshuis">
+            <span class="visit-card__icon" aria-hidden="true">👧</span>
+            <h3 class="visit-card__name">마우리츠하위스</h3>
+            <p class="visit-card__name-en">Mauritshuis</p>
+          </div>
+          <div class="visit-card__body">
+            <table class="visit-card__table" aria-label="마우리츠하위스 상세 정보">
+              <tbody>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">📍 주소</th>
+                  <td class="visit-card__value">Plein 29, 2511 CS Den Haag</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">🕐 운영시간</th>
+                  <td class="visit-card__value">월 13:00 – 18:00 / 화–일 10:00 – 18:00 (목 ~20:00)</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">💶 입장료</th>
+                  <td class="visit-card__value">성인 €19 / 18세 이하 무료</td>
+                </tr>
+                <tr class="visit-card__row">
+                  <th class="visit-card__label" scope="row">🚇 교통</th>
+                  <td class="visit-card__value">트램 1번 Centrum 정류장, 헤이그 중앙역 도보 10분</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 
   <footer id="footer">

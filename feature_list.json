@@ -35,7 +35,7 @@
       "id": 6,
       "name": "방문 정보 섹션",
       "description": "각 미술관의 주소, 운영시간, 입장료 정보를 테이블 또는 카드로 표시",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 7,

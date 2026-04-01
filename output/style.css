@@ -717,7 +717,150 @@ body {
 }
 
 /* #visit */
-/* TODO */
+.visit {
+  padding: 5rem 1.5rem;
+  background-color: var(--bg-color);
+}
+
+.visit__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.visit__heading {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.visit__description {
+  font-size: 1.1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.visit__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.visit-card {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.visit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.visit-card__header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #2A5580 100%);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.visit-card__header--gogh {
+  background: linear-gradient(135deg, #1A4B8C 0%, #E8C84A 100%);
+}
+
+.visit-card__header--mauritshuis {
+  background: linear-gradient(135deg, #3A2E1F 0%, #C8A951 100%);
+}
+
+.visit-card__icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.visit-card__name {
+  font-size: 1.2rem;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.visit-card__name-en {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+}
+
+.visit-card__body {
+  padding: 1.5rem;
+}
+
+.visit-card__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.visit-card__row {
+  border-bottom: 1px solid #f0ece4;
+}
+
+.visit-card__row:last-child {
+  border-bottom: none;
+}
+
+.visit-card__label {
+  padding: 0.75rem 0.5rem 0.75rem 0;
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: normal;
+  white-space: nowrap;
+  vertical-align: top;
+  text-align: left;
+}
+
+.visit-card__value {
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* 태블릿: ~1024px */
+@media (max-width: 1024px) {
+  .visit__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 모바일: ~768px */
+@media (max-width: 768px) {
+  .visit {
+    padding: 3rem 1rem;
+  }
+
+  .visit__heading {
+    font-size: 1.75rem;
+  }
+
+  .visit__description {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .visit__grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .visit-card__header {
+    padding: 1.25rem;
+  }
+
+  .visit-card__body {
+    padding: 1.25rem;
+  }
+}
 
 /* #footer */
 /* TODO */
