@@ -8,7 +8,7 @@ __pycache__/
 .vscode/
 
 # Claude Code
-.claude/
+.claude/settings.local.json
 
 # OS
 .DS_Store
