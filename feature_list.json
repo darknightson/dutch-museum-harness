@@ -1,0 +1,47 @@
+{
+  "project": "네덜란드 미술관 웹사이트",
+  "features": [
+    {
+      "id": 1,
+      "name": "헤더와 네비게이션",
+      "description": "사이트 로고, 메뉴 항목(미술관 소개, 갤러리, 방문 정보), 반응형 햄버거 메뉴",
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "name": "히어로 섹션",
+      "description": "네덜란드 미술관을 상징하는 대형 비주얼 영역, 제목과 소개 문구, CTA 버튼",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "name": "미술관 소개 섹션",
+      "description": "암스테르담 국립미술관, 반 고흐 미술관, 마우리츠하위스 등 최소 3곳의 카드형 소개",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "name": "갤러리 섹션",
+      "description": "각 미술관의 대표 작품을 그리드로 배치, 필터링 기능 (미술관별)",
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "name": "작품 상세 모달",
+      "description": "갤러리 작품 클릭 시 모달로 작품명, 작가, 연도, 설명 표시",
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "name": "방문 정보 섹션",
+      "description": "각 미술관의 주소, 운영시간, 입장료 정보를 테이블 또는 카드로 표시",
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "name": "푸터",
+      "description": "저작권 표시, 소셜 링크 아이콘, 맨 위로 스크롤 버튼",
+      "status": "pending"
+    }
+  ]
+}
