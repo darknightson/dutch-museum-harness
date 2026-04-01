@@ -19,7 +19,7 @@
 사용법 (harness.py에서):
     from security import create_security_hooks
 
-    options = ClaudeAgentOptions(
+    options = ClaudeCodeOptions(
         hooks=create_security_hooks(project_root="/path/to/website"),
     )
 """
@@ -277,7 +277,7 @@ def create_security_hooks(project_root: str) -> dict[str, list[Any]]:
     """
     Claude Agent SDK에 전달할 보안 훅 딕셔너리를 생성한다.
 
-    이 함수가 반환하는 딕셔너리를 ClaudeAgentOptions의 hooks 파라미터에
+    이 함수가 반환하는 딕셔너리를 ClaudeCodeOptions의 hooks 파라미터에
     그대로 전달하면, 에이전트의 모든 도구 호출이 보안 검사를 거친다.
 
     Args:
@@ -288,10 +288,10 @@ def create_security_hooks(project_root: str) -> dict[str, list[Any]]:
         Claude Agent SDK hooks 형식의 딕셔너리.
 
     사용법:
-        from claude_code_sdk import ClaudeAgentOptions, HookMatcher
+        from claude_code_sdk import ClaudeCodeOptions, HookMatcher
         from security import create_security_hooks
 
-        options = ClaudeAgentOptions(
+        options = ClaudeCodeOptions(
             hooks=create_security_hooks(project_root="/path/to/website"),
         )
     """

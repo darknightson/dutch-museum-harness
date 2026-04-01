@@ -69,8 +69,8 @@ from typing import Any
 # ============================================================
 # claude_code_sdk는 Claude Code를 프로그래밍 방식으로 호출하는 공식 SDK이다.
 # - query(): 프롬프트를 보내고 결과를 스트리밍으로 받는 함수
-# - ClaudeAgentOptions: 에이전트의 동작을 설정하는 옵션 객체
-from claude_code_sdk import query, ClaudeAgentOptions
+# - ClaudeCodeOptions: 에이전트의 동작을 설정하는 옵션 객체
+from claude_code_sdk import query, ClaudeCodeOptions
 
 # ============================================================
 # 보안 훅 임포트
@@ -355,9 +355,9 @@ async def run_agent_session(
     # ---------------------------------------------------------
     # 에이전트 옵션 구성
     # ---------------------------------------------------------
-    # ClaudeAgentOptions는 에이전트의 동작을 제어하는 모든 설정을 담는다.
+    # ClaudeCodeOptions는 에이전트의 동작을 제어하는 모든 설정을 담는다.
     # 이 옵션은 세션마다 새로 만든다 (세션 간 상태 공유 방지).
-    options: ClaudeAgentOptions = ClaudeAgentOptions(
+    options: ClaudeCodeOptions = ClaudeCodeOptions(
         # 에이전트가 사용할 수 있는 도구 목록
         # 이 도구들은 보안 훅(security.py)의 검사를 거친 뒤에만 실행된다.
         allowed_tools=[
