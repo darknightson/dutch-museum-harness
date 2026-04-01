@@ -51,7 +51,8 @@
     - git: 커밋 히스토리
 
 실행 방법:
-    ANTHROPIC_API_KEY=sk-... python3 harness.py
+    python3 harness.py
+    (API 키가 환경변수에 없으면 실행 시 안전하게 입력받는다)
 """
 
 from __future__ import annotations
@@ -71,6 +72,7 @@ from typing import Any
 # - query(): 프롬프트를 보내고 결과를 스트리밍으로 받는 함수
 # - ClaudeCodeOptions: 에이전트의 동작을 설정하는 옵션 객체
 from claude_code_sdk import query, ClaudeCodeOptions
+from claude_code_sdk._errors import MessageParseError
 
 # ============================================================
 # 보안 훅 임포트
@@ -405,10 +407,17 @@ async def run_agent_session(
     # Rate limit 재시도 로직
     # ---------------------------------------------------------
     # Claude Max plan은 분당 호출 제한이 있다.
-    # SDK가 rate_limit_event를 받으면 "Unknown message type" 에러를 던진다.
-    # 이 경우 잠시 대기 후 재시도한다.
-    max_rate_limit_retries: int = 5
-    rate_limit_wait_seconds: int = 30
+    # ---------------------------------------------------------
+    # Rate limit 처리 전략
+    # ---------------------------------------------------------
+    # SDK v0.0.25 버그: rate_limit_event 메시지 타입을 파싱하지 못하고
+    # MessageParseError("Unknown message type: rate_limit_event")를 던진다.
+    #
+    # 이 에러는 async for 루프 안의 generator에서 발생하므로,
+    # generator가 종료되어 세션 전체가 실패한다.
+    # → MessageParseError를 catch하고 대기 후 세션을 처음부터 재시도한다.
+    max_rate_limit_retries: int = 8
+    base_wait_seconds: int = 30  # 첫 대기: 30초
 
     for attempt in range(1, max_rate_limit_retries + 1):
         try:
@@ -446,27 +455,30 @@ async def run_agent_session(
             # 정상 완료 시 재시도 루프를 빠져나간다
             break
 
-        except Exception as e:
+        except MessageParseError as e:
+            # SDK가 rate_limit_event 등 미지원 메시지 타입을 만났을 때 발생.
+            # CLI가 내부적으로 rate limit 대기를 처리하므로,
+            # 여기서는 잠시 대기 후 세션을 재시도한다.
             error_str: str = str(e)
+            log(f"[{session_name}] SDK 파싱 에러: {error_str}", "WARN")
 
-            # rate_limit_event 에러인 경우 → 대기 후 재시도
-            if "rate_limit" in error_str.lower() or "unknown message type" in error_str.lower():
-                if attempt < max_rate_limit_retries:
-                    log(f"[{session_name}] Rate limit 감지, "
-                        f"{rate_limit_wait_seconds}초 대기 후 재시도 "
-                        f"({attempt}/{max_rate_limit_retries})", "WARN")
-                    await asyncio.sleep(rate_limit_wait_seconds)
-                    continue
-                else:
-                    log(f"[{session_name}] Rate limit 재시도 횟수 초과", "ERROR")
-                    result["status"] = "error"
-                    result["result"] = error_str
+            if attempt < max_rate_limit_retries:
+                wait_seconds: int = min(base_wait_seconds * (2 ** (attempt - 1)), 300)
+                log(f"[{session_name}] {wait_seconds}초 대기 후 재시도 "
+                    f"({attempt}/{max_rate_limit_retries})", "WARN")
+                await asyncio.sleep(wait_seconds)
+                continue
             else:
-                # rate limit이 아닌 다른 에러 → 즉시 중단
-                log(f"[{session_name}] 에러 발생: {e}", "ERROR")
+                log(f"[{session_name}] 재시도 횟수 초과", "ERROR")
                 result["status"] = "error"
                 result["result"] = error_str
-                break
+
+        except Exception as e:
+            error_str: str = str(e)
+            log(f"[{session_name}] 에러 발생: {error_str}", "ERROR")
+            result["status"] = "error"
+            result["result"] = error_str
+            break
 
     return result
 
@@ -796,6 +808,11 @@ async def main() -> None:
                 log(f"[Evaluator] 기능 #{current_feature_id}를 pending으로 되돌림, 피드백 전달")
 
         session_number += 1
+
+        # 세션 간 대기: rate limit 방지를 위해 잠시 쉰다
+        if pending > 1:
+            log("세션 간 10초 대기 (rate limit 방지)")
+            await asyncio.sleep(10)
 
     else:
         # max_sessions에 도달한 경우 (while-else)
