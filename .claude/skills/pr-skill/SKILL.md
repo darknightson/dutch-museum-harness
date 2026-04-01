@@ -29,15 +29,23 @@ git branch --show-current
 - main 또는 develop 브랜치면: "PR은 feature 브랜치에서 생성해야 합니다." 안내 후 종료
 - feature 브랜치면: 계속 진행
 
-### 3단계: 변경사항 분석
+### 3단계: 타겟 브랜치 결정
 ```bash
-git log main..HEAD --oneline
-git diff main..HEAD --stat
+git merge-base --is-ancestor develop HEAD && echo "develop" || echo "main"
+```
+
+- develop에서 파생된 브랜치면: 타겟 = **develop**
+- main에서 파생된 브랜치면: 타겟 = **main**
+
+### 4단계: 변경사항 분석
+```bash
+git log <타겟브랜치>..HEAD --oneline
+git diff <타겟브랜치>..HEAD --stat
 ```
 
 커밋 목록과 변경된 파일을 분석하여 PR 본문을 자동 생성한다.
 
-### 4단계: PR 본문 생성
+### 5단계: PR 본문 생성
 
 아래 형식을 **정확히** 따른다:
 ```
@@ -75,20 +83,20 @@ AI-Contribution: <기여도>%
 | 40~60% | 사용자와 AI가 공동 작업 |
 | 10~30% | 사용자가 직접 작성, AI는 보조 역할 |
 
-### 5단계: 사용자 확인
+### 6단계: 사용자 확인
 생성된 PR 본문을 보여주고 확인을 요청한다:
 - "이대로 Push + PR 생성할까요?"
-- 타겟 브랜치 확인: "PR 타겟: main (변경하시겠습니까?)"
+- 타겟 브랜치 확인: "PR 타겟: <자동 감지된 브랜치> (변경하시겠습니까?)"
 - 수정 요청이 있으면 반영 후 다시 확인
 
-### 6단계: Push
+### 7단계: Push
 ```bash
 git push origin <현재브랜치>
 ```
 
 push 실패 시 에러 메시지를 보여주고 종료한다.
 
-### 7단계: PR 생성
+### 8단계: PR 생성
 ```bash
 gh pr create --base <타겟브랜치> --title "<제목>" --body "<본문>"
 ```
@@ -96,7 +104,7 @@ gh pr create --base <타겟브랜치> --title "<제목>" --body "<본문>"
 `gh` CLI가 없으면:
 - "gh CLI가 설치되어 있지 않습니다. brew install gh로 설치해주세요." 안내
 
-### 8단계: 결과 보고
+### 9단계: 결과 보고
 - PR URL 출력
 - "PR이 생성되었습니다: <URL>"
 
