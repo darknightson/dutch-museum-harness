@@ -301,8 +301,46 @@
     </div>
   </section>
 
-  <footer id="footer">
-    <!-- TODO: 코딩 에이전트가 구현 -->
+  <footer id="footer" class="footer" aria-label="사이트 푸터">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <span class="footer__logo-icon" aria-hidden="true">🏛</span>
+          <span class="footer__logo-text">Dutch Art Museums</span>
+        </div>
+        <nav class="footer__social" aria-label="소셜 미디어 링크">
+          <ul class="footer__social-list">
+            <li class="footer__social-item">
+              <a href="#" class="footer__social-link" aria-label="Facebook">
+                <span class="footer__social-icon" aria-hidden="true">&#x1F310;</span>
+              </a>
+            </li>
+            <li class="footer__social-item">
+              <a href="#" class="footer__social-link" aria-label="Instagram">
+                <span class="footer__social-icon" aria-hidden="true">&#x1F4F7;</span>
+              </a>
+            </li>
+            <li class="footer__social-item">
+              <a href="#" class="footer__social-link" aria-label="Twitter">
+                <span class="footer__social-icon" aria-hidden="true">&#x1F426;</span>
+              </a>
+            </li>
+            <li class="footer__social-item">
+              <a href="#" class="footer__social-link" aria-label="YouTube">
+                <span class="footer__social-icon" aria-hidden="true">&#x25B6;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2026 Dutch Art Museums. All rights reserved.</p>
+        <p class="footer__note">이 웹사이트는 교육 목적으로 제작되었습니다.</p>
+      </div>
+    </div>
+    <button class="footer__scroll-top" aria-label="페이지 맨 위로 이동" hidden>
+      <span aria-hidden="true">&#x2191;</span>
+    </button>
   </footer>
 
   <div class="modal" id="artworkModal" role="dialog" aria-modal="true" aria-label="작품 상세 정보" hidden>

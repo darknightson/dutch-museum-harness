@@ -156,5 +156,28 @@ const initModal = () => {
 };
 
 const initScrollEffects = () => {
-  // TODO: 코딩 에이전트가 구현
+  const scrollTopBtn = document.querySelector('.footer__scroll-top');
+  if (!scrollTopBtn) return;
+
+  const toggleScrollBtn = () => {
+    if (window.scrollY > 400) {
+      scrollTopBtn.hidden = false;
+      requestAnimationFrame(() => {
+        scrollTopBtn.classList.add('footer__scroll-top--visible');
+      });
+    } else {
+      scrollTopBtn.classList.remove('footer__scroll-top--visible');
+      scrollTopBtn.addEventListener('transitionend', () => {
+        if (!scrollTopBtn.classList.contains('footer__scroll-top--visible')) {
+          scrollTopBtn.hidden = true;
+        }
+      }, { once: true });
+    }
+  };
+
+  window.addEventListener('scroll', toggleScrollBtn);
+
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 };

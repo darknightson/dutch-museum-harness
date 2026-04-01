@@ -863,4 +863,148 @@ body {
 }
 
 /* #footer */
-/* TODO */
+.footer {
+  background-color: var(--primary-color);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 3rem 1.5rem 2rem;
+  position: relative;
+}
+
+.footer__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer__logo-icon {
+  font-size: 1.5rem;
+}
+
+.footer__logo-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.footer__social-list {
+  display: flex;
+  list-style: none;
+  gap: 1rem;
+}
+
+.footer__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.footer__social-link:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.footer__social-icon {
+  font-size: 1.1rem;
+}
+
+.footer__bottom {
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.footer__copyright {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.25rem;
+}
+
+.footer__note {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.footer__scroll-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s, opacity 0.3s;
+  opacity: 0;
+  z-index: 900;
+}
+
+.footer__scroll-top[hidden] {
+  display: none;
+}
+
+.footer__scroll-top--visible {
+  opacity: 1;
+}
+
+.footer__scroll-top:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+/* 태블릿: ~1024px */
+@media (max-width: 1024px) {
+  .footer__top {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+}
+
+/* 모바일: ~768px */
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem 1rem 1.5rem;
+  }
+
+  .footer__social-link {
+    width: 36px;
+    height: 36px;
+  }
+
+  .footer__social-icon {
+    font-size: 1rem;
+  }
+
+  .footer__scroll-top {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 40px;
+    height: 40px;
+  }
+}
