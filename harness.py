@@ -409,27 +409,39 @@ async def run_agent_session(
             # -------------------------------------------------
             # 메시지 타입별 처리
             # -------------------------------------------------
-            # SDK는 여러 타입의 메시지를 스트리밍한다:
-            # - AssistantMessage: 에이전트의 응답 (텍스트 + 도구 호출)
+            # SDK는 여러 타입�� 메시지를 스트리밍한다:
+            # - AssistantMessage: ��이전트의 응답 (텍스트 + 도구 호출)
             # - UserMessage: 도구 실행 결과
             # - ResultMessage: 세션 종료 시 최종 결과
+            # - SystemMessage: 시스템 ���벤트 (rate_limit_event 등)
+            #
+            # 알 �� 없는 메시지 타입이 올 수 있���므로, 각 타입을 안전하게 처리한다.
 
-            # 최종 결과 메시지인지 확인한다.
-            # ResultMessage는 session_id, subtype, total_cost_usd 등을 가진다.
-            if hasattr(message, "subtype") and hasattr(message, "total_cost_usd"):
-                result["status"] = message.subtype
-                result["cost_usd"] = message.total_cost_usd
-                result["num_turns"] = getattr(message, "num_turns", 0)
-                result["result"] = getattr(message, "result", None)
+            try:
+                # 최종 결과 메시지인지 확인한다.
+                # ResultMessage는 session_id, subtype, total_cost_usd 등을 가진다.
+                if hasattr(message, "subtype") and hasattr(message, "total_cost_usd"):
+                    result["status"] = message.subtype
+                    result["cost_usd"] = message.total_cost_usd
+                    result["num_turns"] = getattr(message, "num_turns", 0)
+                    result["result"] = getattr(message, "result", None)
 
-                log(f"[{session_name}] 세션 종료: {message.subtype}")
-                log(f"[{session_name}] 비용: ${message.total_cost_usd:.4f}, 턴: {result['num_turns']}")
+                    log(f"[{session_name}] 세션 종료: {message.subtype}")
+                    log(f"[{session_name}] 비용: ${message.total_cost_usd:.4f}, 턴: {result['num_turns']}")
 
-            # 에이전트의 응답 메시지 (도구 호출 포함)
-            elif hasattr(message, "content"):
-                for block in message.content:
-                    if hasattr(block, "type") and block.type == "tool_use":
-                        log(f"[{session_name}] 도구 호출: {block.name}")
+                # 에이전��의 응답 메시지 (도구 호출 포함)
+                elif hasattr(message, "content"):
+                    for block in message.content:
+                        if hasattr(block, "type") and block.type == "tool_use":
+                            log(f"[{session_name}] 도구 호출: {block.name}")
+
+                # 그 외 메시지 (rate_limit_event, system 등)는 무시한다.
+                # SDK가 내부적으로 처리하므로 하네스에서 별도 처리할 필요 없다.
+
+            except Exception as msg_err:
+                # 개별 메시지 처리 중 에러는 무시하고 다음 메시지로 넘어간다.
+                # 세션 전체를 중단하지 않기 위함이다.
+                log(f"[{session_name}] 메시지 처리 중 경고: {msg_err}", "WARN")
 
     except Exception as e:
         log(f"[{session_name}] 에러 발생: {e}", "ERROR")
