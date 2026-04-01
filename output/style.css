@@ -557,6 +557,165 @@ body {
   }
 }
 
+/* #modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  animation: modal__fade-in 0.25s ease;
+}
+
+@keyframes modal__fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal__container {
+  position: relative;
+  background-color: #fff;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  animation: modal__slide-up 0.3s ease;
+}
+
+@keyframes modal__slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal__visual {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.modal__icon {
+  font-size: 5rem;
+}
+
+.modal__body {
+  padding: 2rem;
+}
+
+.modal__title {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.modal__artist {
+  font-size: 1.05rem;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.modal__year {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 0.25rem;
+}
+
+.modal__museum {
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  font-weight: bold;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #eee;
+}
+
+.modal__description {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  line-height: 1.8;
+}
+
+.modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.modal__close:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* 태블릿: ~1024px */
+@media (max-width: 1024px) {
+  .modal__container {
+    max-width: 520px;
+  }
+}
+
+/* 모바일: ~768px */
+@media (max-width: 768px) {
+  .modal {
+    padding: 1rem;
+    align-items: flex-end;
+  }
+
+  .modal__container {
+    max-height: 85vh;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal__visual {
+    height: 160px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .modal__icon {
+    font-size: 3.5rem;
+  }
+
+  .modal__body {
+    padding: 1.5rem;
+  }
+
+  .modal__title {
+    font-size: 1.25rem;
+  }
+}
+
 /* #visit */
 /* TODO */
 

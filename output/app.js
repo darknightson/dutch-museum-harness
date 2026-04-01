@@ -80,7 +80,79 @@ const initGallery = () => {
 };
 
 const initModal = () => {
-  // TODO: 코딩 에이전트가 구현
+  const modal = document.querySelector('#artworkModal');
+  const galleryGrid = document.querySelector('.gallery__grid');
+
+  if (!modal || !galleryGrid) return;
+
+  const modalIcon = modal.querySelector('.modal__icon');
+  const modalVisual = modal.querySelector('.modal__visual');
+  const modalTitle = modal.querySelector('.modal__title');
+  const modalArtist = modal.querySelector('.modal__artist');
+  const modalYear = modal.querySelector('.modal__year');
+  const modalMuseum = modal.querySelector('.modal__museum');
+  const modalDescription = modal.querySelector('.modal__description');
+  const modalClose = modal.querySelector('.modal__close');
+  const modalOverlay = modal.querySelector('.modal__overlay');
+
+  let previousFocus = null;
+
+  const openModal = (item) => {
+    const visual = item.querySelector('.gallery__item-visual');
+    const icon = item.querySelector('.gallery__item-icon');
+    const title = item.querySelector('.gallery__item-title');
+    const artist = item.querySelector('.gallery__item-artist');
+    const year = item.querySelector('.gallery__item-year');
+    const museum = item.querySelector('.gallery__item-museum');
+    const description = item.dataset.description || '';
+
+    modalVisual.style.background = visual.style.background;
+    modalIcon.textContent = icon.textContent;
+    modalTitle.textContent = title.textContent;
+    modalArtist.textContent = artist.textContent;
+    modalYear.textContent = year.textContent;
+    modalMuseum.textContent = museum.textContent;
+    modalDescription.textContent = description;
+
+    previousFocus = document.activeElement;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    modalClose.focus();
+  };
+
+  const closeModal = () => {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    if (previousFocus) {
+      previousFocus.focus();
+    }
+  };
+
+  galleryGrid.addEventListener('click', (e) => {
+    const item = e.target.closest('.gallery__item');
+    if (item) {
+      openModal(item);
+    }
+  });
+
+  galleryGrid.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const item = e.target.closest('.gallery__item');
+      if (item) {
+        e.preventDefault();
+        openModal(item);
+      }
+    }
+  });
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', closeModal);
+
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
 };
 
 const initScrollEffects = () => {

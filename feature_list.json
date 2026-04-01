@@ -29,7 +29,7 @@
       "id": 5,
       "name": "작품 상세 모달",
       "description": "갤러리 작품 클릭 시 모달로 작품명, 작가, 연도, 설명 표시",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 6,
