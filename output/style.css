@@ -267,7 +267,136 @@ body {
 }
 
 /* #museums */
-/* TODO */
+.museums {
+  padding: 5rem 1.5rem;
+  background-color: var(--bg-color);
+}
+
+.museums__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.museums__heading {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.museums__description {
+  font-size: 1.1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.museums__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.museum-card {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.museum-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.museum-card__visual {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #2A5580 100%);
+}
+
+.museum-card__visual--gogh {
+  background: linear-gradient(135deg, #1A4B8C 0%, #E8C84A 100%);
+}
+
+.museum-card__visual--mauritshuis {
+  background: linear-gradient(135deg, #3A2E1F 0%, #C8A951 100%);
+}
+
+.museum-card__icon {
+  font-size: 4rem;
+}
+
+.museum-card__body {
+  padding: 1.5rem;
+}
+
+.museum-card__name {
+  font-size: 1.3rem;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+
+.museum-card__name-en {
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.museum-card__text {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.museum-card__highlights {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.museum-card__highlight {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* 태블릿: ~1024px */
+@media (max-width: 1024px) {
+  .museums__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 모바일: ~768px */
+@media (max-width: 768px) {
+  .museums {
+    padding: 3rem 1rem;
+  }
+
+  .museums__heading {
+    font-size: 1.75rem;
+  }
+
+  .museums__description {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .museums__grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .museum-card__visual {
+    height: 140px;
+  }
+}
 
 /* #gallery */
 /* TODO */

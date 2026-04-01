@@ -37,8 +37,58 @@
     </div>
   </section>
 
-  <section id="museums">
-    <!-- TODO: 코딩 에이전트가 구현 -->
+  <section id="museums" class="museums" aria-label="미술관 소개">
+    <div class="museums__inner">
+      <h2 class="museums__heading">네덜란드의 미술관</h2>
+      <p class="museums__description">세계적인 거장들의 걸작을 소장한 네덜란드 대표 미술관을 만나보세요.</p>
+      <div class="museums__grid">
+        <article class="museum-card" aria-label="암스테르담 국립미술관 소개">
+          <div class="museum-card__visual" aria-hidden="true">
+            <div class="museum-card__icon">🏛</div>
+          </div>
+          <div class="museum-card__body">
+            <h3 class="museum-card__name">암스테르담 국립미술관</h3>
+            <p class="museum-card__name-en">Rijksmuseum</p>
+            <p class="museum-card__text">1800년에 설립된 네덜란드 최대의 미술관으로, 렘브란트의 &lt;야경&gt;을 비롯해 80만 점 이상의 예술품을 소장하고 있습니다. 네덜란드 황금시대의 걸작을 한눈에 감상할 수 있는 곳입니다.</p>
+            <ul class="museum-card__highlights">
+              <li class="museum-card__highlight">🎨 대표작: 야경 (렘브란트)</li>
+              <li class="museum-card__highlight">📅 설립: 1800년</li>
+              <li class="museum-card__highlight">📍 암스테르담</li>
+            </ul>
+          </div>
+        </article>
+        <article class="museum-card" aria-label="반 고흐 미술관 소개">
+          <div class="museum-card__visual museum-card__visual--gogh" aria-hidden="true">
+            <div class="museum-card__icon">🌻</div>
+          </div>
+          <div class="museum-card__body">
+            <h3 class="museum-card__name">반 고흐 미술관</h3>
+            <p class="museum-card__name-en">Van Gogh Museum</p>
+            <p class="museum-card__text">빈센트 반 고흐의 작품을 세계에서 가장 많이 소장한 미술관입니다. &lt;해바라기&gt;, &lt;자화상&gt; 등 200점 이상의 회화와 500점 이상의 소묘를 만나볼 수 있습니다.</p>
+            <ul class="museum-card__highlights">
+              <li class="museum-card__highlight">🎨 대표작: 해바라기 (고흐)</li>
+              <li class="museum-card__highlight">📅 설립: 1973년</li>
+              <li class="museum-card__highlight">📍 암스테르담</li>
+            </ul>
+          </div>
+        </article>
+        <article class="museum-card" aria-label="마우리츠하위스 소개">
+          <div class="museum-card__visual museum-card__visual--mauritshuis" aria-hidden="true">
+            <div class="museum-card__icon">👧</div>
+          </div>
+          <div class="museum-card__body">
+            <h3 class="museum-card__name">마우리츠하위스</h3>
+            <p class="museum-card__name-en">Mauritshuis</p>
+            <p class="museum-card__text">17세기 저택을 개조한 아담한 미술관으로, 베르메르의 &lt;진주 귀걸이를 한 소녀&gt;를 소장하고 있습니다. 네덜란드와 플랑드르 황금시대 회화의 보고입니다.</p>
+            <ul class="museum-card__highlights">
+              <li class="museum-card__highlight">🎨 대표작: 진주 귀걸이를 한 소녀 (베르메르)</li>
+              <li class="museum-card__highlight">📅 설립: 1822년</li>
+              <li class="museum-card__highlight">📍 헤이그</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 
   <section id="gallery">
