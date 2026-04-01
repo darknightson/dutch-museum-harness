@@ -10,33 +10,43 @@
     - 사람 → CLI → Claude   (일반적인 사용)
     - 사람 → harness.py → Claude Agent SDK → Claude   (하네스 패턴)
 
-동작 흐름:
+동작 흐름 (Generator-Evaluator 패턴):
     1. feature_list.json이 없으면 → 초기화 에이전트 실행
-    2. feature_list.json이 있으면 → 코딩 에이전트 실행
-    3. pending 기능이 남아있으면 → 2번으로 돌아가서 반복
-    4. 모든 기능이 done이면 → 완료
+    2. feature_list.json이 있으면 → 코딩 에이전트(Generator) 실행
+    3. Evaluator 에이전트가 구현 결과를 검증
+    4. 통과 → 다음 기능 / 미달 → 피드백 전달 후 재시도 (최대 3회)
+    5. 모든 기능이 done이면 → 완료
 
-    ┌─────────────────────────────────────────────┐
-    │              harness.py 실행                  │
-    │                    │                         │
-    │         feature_list.json 있나?              │
-    │           ↙ 없다        ↘ 있다               │
-    │   초기화 에이전트      코딩 에이전트           │
-    │   (1회 실행)         (반복 실행)              │
-    │        │                  │                  │
-    │        ↓                  ↓                  │
-    │   뼈대 파일 생성     기능 하나 구현            │
-    │        │                  │                  │
-    │        └──→ pending 남았나? ←──┘              │
-    │              ↙ 예     ↘ 아니오                │
-    │         코딩 에이전트    완료!                 │
-    └─────────────────────────────────────────────┘
+    ┌──────────────────────────────────────────────────┐
+    │               harness.py 실행                     │
+    │                     │                            │
+    │          feature_list.json 있나?                  │
+    │            ↙ 없다        ↘ 있다                   │
+    │    초기화 에이전트      코딩 에이전트(Generator)    │
+    │    (1회 실행)          (기능 구현)                 │
+    │         │                   │                    │
+    │         ↓                   ↓                    │
+    │    뼈대 파일 생성     Evaluator 에이전트           │
+    │         │             (구현 검증, 채점)            │
+    │         │                   │                    │
+    │         │            통과? ──┤                    │
+    │         │          ↙        ↘                    │
+    │         │    No: 피드백 전달   Yes: 다음 기능       │
+    │         │    (최대 3회 재시도)       │              │
+    │         │          ↓               │              │
+    │         │    코딩 에이전트 재실행    │              │
+    │         │                          │              │
+    │         └──→ pending 남았나? ←──────┘              │
+    │               ↙ 예     ↘ 아니오                    │
+    │          코딩 에이전트    완료!                     │
+    └──────────────────────────────────────────────────┘
 
 세션 간 공유:
     에이전트는 매 세션마다 새로 시작된다 (컨텍스트 윈도우 초기화).
     세션 간에 공유되는 것은 오직 파일 시스템뿐이다:
     - feature_list.json: 기능 목록과 진행 상태
     - progress.txt: 작업 이력 로그
+    - evaluation_result.json: Evaluator의 평가 결과 (피드백 전달용)
     - output/: 실제 웹사이트 파일들
     - git: 커밋 히스토리
 
@@ -79,7 +89,15 @@ PROJECT_ROOT: Path = Path(__file__).parent.resolve()
 PROMPTS_DIR: Path = PROJECT_ROOT / "prompts"
 FEATURE_LIST_PATH: Path = PROJECT_ROOT / "feature_list.json"
 PROGRESS_PATH: Path = PROJECT_ROOT / "progress.txt"
+EVALUATION_RESULT_PATH: Path = PROJECT_ROOT / "evaluation_result.json"
 OUTPUT_DIR: Path = PROJECT_ROOT / "output"
+
+# ============================================================
+# Generator-Evaluator 패턴 설정
+# ============================================================
+# Evaluator가 미달 판정을 내리면 같은 기능을 재시도한다.
+# 무한 루프를 방지하기 위해 최대 재시도 횟수를 제한한다.
+MAX_RETRIES: int = 3
 
 
 # ============================================================
@@ -157,6 +175,114 @@ def get_feature_summary(feature_data: dict[str, Any]) -> str:
     done: int = sum(1 for f in features if f.get("status") == "done")
     pending: int = sum(1 for f in features if f.get("status") == "pending")
     return f"전체 {total}개 / 완료 {done}개 / 남은 {pending}개"
+
+
+# ============================================================
+# evaluation_result.json 관리 함수들
+# ============================================================
+def load_evaluation_result() -> dict[str, Any] | None:
+    """
+    evaluation_result.json을 읽어서 파싱한다.
+
+    Evaluator 에이전트가 생성하는 파일이다.
+    하네스는 이 파일을 읽어서 통과 여부를 판단하고,
+    미달 시 피드백을 코딩 에이전트에게 전달한다.
+
+    Returns:
+        파싱된 JSON 딕셔너리. 파일이 없으면 None.
+    """
+    if not EVALUATION_RESULT_PATH.exists():
+        return None
+
+    with open(EVALUATION_RESULT_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def format_feedback(evaluation: dict[str, Any]) -> str:
+    """
+    Evaluator의 평가 결과를 코딩 에이전트에게 전달할 피드백 문자열로 변환한다.
+
+    이 피드백은 코딩 에이전트의 프롬프트에 추가되어,
+    에이전트가 지적된 문제를 우선적으로 수정하도록 유도한다.
+
+    Args:
+        evaluation: evaluation_result.json의 파싱된 데이터.
+
+    Returns:
+        코딩 에이전트에게 전달할 피드백 문자열.
+    """
+    lines: list[str] = []
+    lines.append(f"## Evaluator 피드백 (기능 #{evaluation.get('feature_id', '?')}: {evaluation.get('feature_name', '?')})")
+    lines.append("")
+
+    # 점수 요약
+    scores: dict[str, int] = evaluation.get("scores", {})
+    avg: float = evaluation.get("average", 0.0)
+    lines.append(f"점수: 완성도 {scores.get('completeness', 0)} / "
+                 f"품질 {scores.get('code_quality', 0)} / "
+                 f"UI {scores.get('ui_ux', 0)} / "
+                 f"호환성 {scores.get('compatibility', 0)} = 평균 {avg}")
+    lines.append("")
+
+    # 문제점
+    issues: list[str] = evaluation.get("issues", [])
+    if issues:
+        lines.append("### 문제점 (반드시 수정할 것)")
+        for i, issue in enumerate(issues, 1):
+            lines.append(f"{i}. {issue}")
+        lines.append("")
+
+    # 개선사항
+    improvements: list[str] = evaluation.get("improvements", [])
+    if improvements:
+        lines.append("### 개선사항 (이렇게 수정하라)")
+        for i, imp in enumerate(improvements, 1):
+            lines.append(f"{i}. {imp}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def revert_feature_to_pending(feature_id: int) -> None:
+    """
+    feature_list.json에서 특정 기능의 상태를 다시 pending으로 되돌린다.
+
+    Evaluator가 미달 판정을 내리면, 해당 기능을 pending으로 되돌려서
+    코딩 에이전트가 다시 선택하여 수정하도록 한다.
+
+    Args:
+        feature_id: 되돌릴 기능의 id.
+    """
+    feature_data: dict[str, Any] | None = load_feature_list()
+    if feature_data is None:
+        return
+
+    for feature in feature_data.get("features", []):
+        if feature.get("id") == feature_id:
+            feature["status"] = "pending"
+            break
+
+    with open(FEATURE_LIST_PATH, "w", encoding="utf-8") as f:
+        json.dump(feature_data, f, ensure_ascii=False, indent=2)
+
+
+def get_latest_done_feature_id(feature_data: dict[str, Any]) -> int | None:
+    """
+    feature_list.json에서 가장 최근 done된 기능의 id를 반환한다.
+
+    Args:
+        feature_data: feature_list.json의 파싱된 데이터.
+
+    Returns:
+        가장 큰 id를 가진 done 기능의 id. 없으면 None.
+    """
+    done_features: list[dict[str, Any]] = [
+        f for f in feature_data.get("features", [])
+        if f.get("status") == "done"
+    ]
+    if not done_features:
+        return None
+    return max(f.get("id", 0) for f in done_features)
 
 
 # ============================================================
@@ -374,6 +500,79 @@ async def run_coding_session(session_number: int) -> dict[str, Any]:
 
 
 # ============================================================
+# Evaluator 단계
+# ============================================================
+async def run_evaluator(feature_id: int) -> dict[str, Any]:
+    """
+    Evaluator 에이전트를 실행한다.
+
+    Generator-Evaluator 패턴에서 "검증하는 놈" 역할이다.
+    코딩 에이전트가 구현한 기능을 별도 에이전트가 객관적으로 평가한다.
+
+    Evaluator는 읽기 전용이다:
+    - Read, Glob, Grep만 사용 (Write, Edit, Bash 미허용)
+    - evaluation_result.json만 쓸 수 있다 (Write는 이 파일에만 허용)
+
+    Args:
+        feature_id: 평가할 기능의 id (로그용).
+
+    Returns:
+        세션 결과 딕셔너리.
+    """
+    log(f"[Evaluator] 기능 #{feature_id} 평가 시작", "START")
+
+    prompt: str = load_prompt("evaluator_task.md")
+    return await run_agent_session(
+        prompt=prompt,
+        session_name=f"Evaluator #{feature_id}",
+        max_turns=15,       # 평가는 읽기 위주이므로 턴을 적게 잡는다
+    )
+
+
+# ============================================================
+# 피드백 포함 코딩 세션
+# ============================================================
+async def run_coding_with_feedback(
+    session_number: int,
+    feedback: str,
+) -> dict[str, Any]:
+    """
+    Evaluator의 피드백을 포함하여 코딩 에이전트를 재실행한다.
+
+    Generator-Evaluator 패턴에서 "재시도" 부분이다.
+    Evaluator가 미달 판정을 내리면, 피드백(문제점 + 개선사항)을
+    코딩 에이전트의 프롬프트에 추가하여 재실행한다.
+
+    이렇게 하면 코딩 에이전트는:
+    1. evaluation_result.json에서 피드백을 읽고
+    2. 지적된 문제를 우선적으로 수정한다
+
+    Args:
+        session_number: 현재 코딩 세션 번호 (로그용).
+        feedback: Evaluator가 작성한 피드백 문자열.
+
+    Returns:
+        세션 결과 딕셔너리.
+    """
+    log(f"[Generator] 피드백 반영 재시도 (세션 #{session_number})", "WARN")
+
+    # 기본 프롬프트에 Evaluator 피드백을 추가한다
+    base_prompt: str = load_prompt("continuation_task.md")
+    prompt_with_feedback: str = (
+        f"{base_prompt}\n\n"
+        f"---\n\n"
+        f"# ⚠️ 이전 Evaluator 평가에서 미달 판정을 받았다. 아래 피드백을 최우선으로 반영하라.\n\n"
+        f"{feedback}"
+    )
+
+    return await run_agent_session(
+        prompt=prompt_with_feedback,
+        session_name=f"코딩 #{session_number} (재시도)",
+        max_turns=30,
+    )
+
+
+# ============================================================
 # 메인 오케스트레이션 루프
 # ============================================================
 async def main() -> None:
@@ -382,8 +581,9 @@ async def main() -> None:
 
     이 함수가 전체 흐름을 제어하는 오케스트레이터이다:
     1. 초기화 여부 판단
-    2. 초기화 또는 코딩 에이전트 실행
-    3. 반복 또는 종료 결정
+    2. Generator(코딩 에이전트) 실행
+    3. Evaluator(평가 에이전트) 실행
+    4. 통과 → 다음 기능 / 미달 → 피드백 전달 후 재시도 (최대 3회)
 
     세션 결과를 모아서 최종 요약을 출력한다.
     """
@@ -392,7 +592,7 @@ async def main() -> None:
     log("=" * 50)
 
     # 프롬프트 파일 존재 확인
-    for filename in ["initializer_task.md", "continuation_task.md"]:
+    for filename in ["initializer_task.md", "continuation_task.md", "evaluator_task.md"]:
         if not (PROMPTS_DIR / filename).exists():
             log(f"프롬프트 파일 누락: prompts/{filename}", "ERROR")
             sys.exit(1)
@@ -431,18 +631,23 @@ async def main() -> None:
         log("feature_list.json 발견 - 초기화 건너뜀")
 
     # ---------------------------------------------------------
-    # 2단계: 코딩 루프 (pending 기능이 없을 때까지 반복)
+    # 2단계: Generator-Evaluator 루프
     # ---------------------------------------------------------
     # 매 반복마다:
     #   1. feature_list.json을 읽는다
-    #   2. pending 기능이 있으면 코딩 에이전트를 실행한다
-    #   3. pending 기능이 없으면 루프를 종료한다
+    #   2. pending 기능이 있으면 Generator(코딩 에이전트)를 실행한다
+    #   3. Evaluator(평가 에이전트)가 구현 결과를 검증한다
+    #   4. 통과 → 다음 기능 / 미달 → 피드백 전달 후 재시도 (최대 3회)
     #
-    # 이것이 하네스 패턴의 "반복 실행" 부분이다.
-    # 에이전트는 매번 새로운 세션으로 시작하지만,
-    # feature_list.json과 progress.txt를 통해 이전 작업을 이어간다.
+    # 이것이 Generator-Evaluator 패턴의 핵심이다:
+    # - Generator는 기능을 만든다
+    # - Evaluator는 만들어진 기능을 검증한다
+    # - 미달이면 Evaluator의 피드백을 Generator에게 전달하여 재시도한다
+    # - "만드는 놈과 검증하는 놈은 반드시 분리한다"
     session_number: int = 1
-    max_sessions: int = 20  # 무한 루프 방지용 안전장치
+    retry_count: int = 0        # 현재 기능의 재시도 횟수
+    feedback: str | None = None  # Evaluator의 피드백 (재시도 시 전달)
+    max_sessions: int = 50       # 무한 루프 방지용 안전장치 (재시도 포함)
 
     while session_number <= max_sessions:
         # feature_list.json을 매번 새로 읽는다
@@ -462,16 +667,102 @@ async def main() -> None:
         log(f"남은 기능: {pending}개")
         log("-" * 40)
 
-        # 코딩 에이전트 실행
-        coding_result: dict[str, Any] = await run_coding_session(session_number)
+        # ==========================================================
+        # Generator 실행 (코딩 에이전트)
+        # ==========================================================
+        # 피드백이 있으면 피드백을 포함한 프롬프트로 재실행한다.
+        # 피드백이 없으면 기본 프롬프트로 실행한다.
+        if feedback:
+            coding_result: dict[str, Any] = await run_coding_with_feedback(
+                session_number, feedback
+            )
+        else:
+            coding_result: dict[str, Any] = await run_coding_session(session_number)
+
         all_results.append(coding_result)
 
-        # 세션 실패 시 중단한다
-        # 실패한 세션을 무시하고 계속하면 에러가 누적될 수 있다.
+        # Generator 세션 실패 시 중단
         if coding_result["status"] != "success":
             log(f"코딩 세션 #{session_number} 실패: {coding_result['status']}", "ERROR")
             log("남은 기능은 다음 harness.py 실행 시 이어서 작업합니다.", "WARN")
             break
+
+        # ==========================================================
+        # Evaluator 실행 (평가 에이전트)
+        # ==========================================================
+        # 코딩 에이전트가 완료한 기능을 별도 에이전트가 검증한다.
+        # feature_list.json에서 가장 최근 done된 기능의 id를 찾는다.
+        feature_data = load_feature_list()
+        if feature_data is None:
+            log("feature_list.json이 사라졌습니다", "ERROR")
+            break
+
+        current_feature_id: int | None = get_latest_done_feature_id(feature_data)
+
+        if current_feature_id is None:
+            # 코딩 에이전트가 done으로 바꾸지 않았을 수 있다 → 다음으로 넘어감
+            log("[Evaluator] done 기능을 찾을 수 없음, 다음으로 진행", "WARN")
+            feedback = None
+            retry_count = 0
+            session_number += 1
+            continue
+
+        eval_result: dict[str, Any] = await run_evaluator(current_feature_id)
+        all_results.append(eval_result)
+
+        # Evaluator 세션 실패 시 → 평가 건너뛰고 다음 기능으로
+        if eval_result["status"] != "success":
+            log(f"[Evaluator] 세션 실패: {eval_result['status']}, 평가 건너뜀", "WARN")
+            feedback = None
+            retry_count = 0
+            session_number += 1
+            continue
+
+        # ==========================================================
+        # 평가 결과 판정
+        # ==========================================================
+        evaluation: dict[str, Any] | None = load_evaluation_result()
+
+        if evaluation is None:
+            log("[Evaluator] evaluation_result.json을 찾을 수 없음, 통과 처리", "WARN")
+            feedback = None
+            retry_count = 0
+            session_number += 1
+            continue
+
+        # 평가 점수 로그 출력
+        scores: dict[str, int] = evaluation.get("scores", {})
+        avg: float = evaluation.get("average", 0.0)
+        log(f"[Evaluator] 점수: "
+            f"완성도 {scores.get('completeness', 0)} / "
+            f"품질 {scores.get('code_quality', 0)} / "
+            f"UI {scores.get('ui_ux', 0)} / "
+            f"호환성 {scores.get('compatibility', 0)} = 평균 {avg}")
+
+        if evaluation.get("passed", False):
+            # ----- 통과 -----
+            log(f"[Evaluator] 기능 #{current_feature_id} 통과!", "DONE")
+            feedback = None
+            retry_count = 0
+        else:
+            # ----- 미달 -----
+            retry_count += 1
+            issues: list[str] = evaluation.get("issues", [])
+            log(f"[Evaluator] 기능 #{current_feature_id} 미달 "
+                f"(재시도 {retry_count}/{MAX_RETRIES})", "WARN")
+            for i, issue in enumerate(issues, 1):
+                log(f"[Evaluator]   {i}. {issue}")
+
+            if retry_count >= MAX_RETRIES:
+                # 최대 재시도 초과 → 포기하고 다음 기능으로
+                log(f"[Evaluator] 최대 재시도 횟수({MAX_RETRIES}) 초과, 다음 기능으로 넘어감", "WARN")
+                feedback = None
+                retry_count = 0
+            else:
+                # 재시도 → 기능을 pending으로 되돌리고 피드백 전달
+                revert_feature_to_pending(current_feature_id)
+                feedback = format_feedback(evaluation)
+                log(f"[Evaluator] 기능 #{current_feature_id}를 pending으로 되돌림, 피드백 전달")
 
         session_number += 1
 
