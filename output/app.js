@@ -52,7 +52,31 @@ const initNavigation = () => {
 };
 
 const initGallery = () => {
-  // TODO: 코딩 에이전트가 구현
+  const filtersContainer = document.querySelector('.gallery__filters');
+  const items = document.querySelectorAll('.gallery__item');
+
+  if (!filtersContainer || items.length === 0) return;
+
+  filtersContainer.addEventListener('click', (e) => {
+    if (!e.target.matches('.gallery__filter')) return;
+
+    const filter = e.target.dataset.filter;
+
+    filtersContainer.querySelectorAll('.gallery__filter').forEach((btn) => {
+      btn.classList.remove('gallery__filter--active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    e.target.classList.add('gallery__filter--active');
+    e.target.setAttribute('aria-pressed', 'true');
+
+    items.forEach((item) => {
+      if (filter === 'all' || item.dataset.museum === filter) {
+        item.classList.remove('gallery__item--hidden');
+      } else {
+        item.classList.add('gallery__item--hidden');
+      }
+    });
+  });
 };
 
 const initModal = () => {

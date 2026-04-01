@@ -23,7 +23,7 @@
       "id": 4,
       "name": "갤러리 섹션",
       "description": "각 미술관의 대표 작품을 그리드로 배치, 필터링 기능 (미술관별)",
-      "status": "pending"
+      "status": "done"
     },
     {
       "id": 5,

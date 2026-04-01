@@ -91,8 +91,118 @@
     </div>
   </section>
 
-  <section id="gallery">
-    <!-- TODO: 코딩 에이전트가 구현 -->
+  <section id="gallery" class="gallery" aria-label="작품 갤러리">
+    <div class="gallery__inner">
+      <h2 class="gallery__heading">작품 갤러리</h2>
+      <p class="gallery__description">네덜란드 미술관의 대표 걸작들을 감상하세요.</p>
+      <div class="gallery__filters" role="toolbar" aria-label="미술관별 필터">
+        <button class="gallery__filter gallery__filter--active" data-filter="all" aria-pressed="true">전체</button>
+        <button class="gallery__filter" data-filter="rijksmuseum" aria-pressed="false">국립미술관</button>
+        <button class="gallery__filter" data-filter="vangogh" aria-pressed="false">반 고흐 미술관</button>
+        <button class="gallery__filter" data-filter="mauritshuis" aria-pressed="false">마우리츠하위스</button>
+      </div>
+      <div class="gallery__grid">
+        <article class="gallery__item" data-museum="rijksmuseum" aria-label="야경, 렘브란트 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #1a1a0e 0%, #3d3510 30%, #8b7320 60%, #c4a832 100%);">
+            <span class="gallery__item-icon">🌙</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">야경</h3>
+            <p class="gallery__item-artist">렘브란트 판 레인</p>
+            <p class="gallery__item-year">1642년</p>
+            <p class="gallery__item-museum">암스테르담 국립미술관</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="rijksmuseum" aria-label="우유 따르는 여인, 베르메르 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #4a5568 0%, #a0aec0 40%, #e2c97e 70%, #d4a84b 100%);">
+            <span class="gallery__item-icon">🥛</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">우유 따르는 여인</h3>
+            <p class="gallery__item-artist">요하네스 베르메르</p>
+            <p class="gallery__item-year">1658년경</p>
+            <p class="gallery__item-museum">암스테르담 국립미술관</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="rijksmuseum" aria-label="유대인 신부, 렘브란트 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #2d1810 0%, #8b4513 40%, #cd853f 70%, #c8a951 100%);">
+            <span class="gallery__item-icon">💑</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">유대인 신부</h3>
+            <p class="gallery__item-artist">렘브란트 판 레인</p>
+            <p class="gallery__item-year">1665년경</p>
+            <p class="gallery__item-museum">암스테르담 국립미술관</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="vangogh" aria-label="해바라기, 빈센트 반 고흐 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #d4a017 0%, #e8c84a 40%, #f0d860 70%, #c8a020 100%);">
+            <span class="gallery__item-icon">🌻</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">해바라기</h3>
+            <p class="gallery__item-artist">빈센트 반 고흐</p>
+            <p class="gallery__item-year">1889년</p>
+            <p class="gallery__item-museum">반 고흐 미술관</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="vangogh" aria-label="자화상, 빈센트 반 고흐 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #2e6b8a 0%, #4a90b0 40%, #6db0d0 70%, #8ecae6 100%);">
+            <span class="gallery__item-icon">🧑‍🎨</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">자화상</h3>
+            <p class="gallery__item-artist">빈센트 반 고흐</p>
+            <p class="gallery__item-year">1889년</p>
+            <p class="gallery__item-museum">반 고흐 미술관</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="vangogh" aria-label="감자 먹는 사람들, 빈센트 반 고흐 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #2c1e10 0%, #5c4030 40%, #7a6050 70%, #3d2b1f 100%);">
+            <span class="gallery__item-icon">🥔</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">감자 먹는 사람들</h3>
+            <p class="gallery__item-artist">빈센트 반 고흐</p>
+            <p class="gallery__item-year">1885년</p>
+            <p class="gallery__item-museum">반 고흐 미술관</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="mauritshuis" aria-label="진주 귀걸이를 한 소녀, 베르메르 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #1a1a2e 0%, #2d3a5c 40%, #4a6fa5 70%, #e8d08c 100%);">
+            <span class="gallery__item-icon">👧</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">진주 귀걸이를 한 소녀</h3>
+            <p class="gallery__item-artist">요하네스 베르메르</p>
+            <p class="gallery__item-year">1665년경</p>
+            <p class="gallery__item-museum">마우리츠하위스</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="mauritshuis" aria-label="황금방울새, 파브리티우스 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #f5f0e0 0%, #e8dcc0 40%, #c8b888 70%, #a09060 100%);">
+            <span class="gallery__item-icon">🐦</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">황금방울새</h3>
+            <p class="gallery__item-artist">카렐 파브리티우스</p>
+            <p class="gallery__item-year">1654년</p>
+            <p class="gallery__item-museum">마우리츠하위스</p>
+          </div>
+        </article>
+        <article class="gallery__item" data-museum="mauritshuis" aria-label="해부학 강의, 렘브란트 작품">
+          <div class="gallery__item-visual" aria-hidden="true" style="background: linear-gradient(160deg, #1a1a1a 0%, #3a3020 40%, #5a4830 70%, #2a2010 100%);">
+            <span class="gallery__item-icon">📖</span>
+          </div>
+          <div class="gallery__item-info">
+            <h3 class="gallery__item-title">튤프 박사의 해부학 강의</h3>
+            <p class="gallery__item-artist">렘브란트 판 레인</p>
+            <p class="gallery__item-year">1632년</p>
+            <p class="gallery__item-museum">마우리츠하위스</p>
+          </div>
+        </article>
+      </div>
+    </div>
   </section>
 
   <section id="visit">
